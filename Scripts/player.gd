@@ -3,9 +3,9 @@ extends CharacterBody2D
 # --------- VARIABLES ---------- #
 
 @export_category("Player Properties") # You can tweak these changes according to your likings
-@export var move_speed : float = 400
+@export var move_speed : float = 1600
 @export var jump_force : float = 1000
-@export var gravity : float = 3
+@export var gravity : float = 30
 @export var max_jump_count : int = 2
 var jump_count : int = 2
 
@@ -21,37 +21,37 @@ var is_grounded : bool = false
 
 # --------- BUILT-IN FUNCTIONS ---------- #
 
-func _process(_delta):
+func _process(delta):
 	# Calling functions
-	movement()
+	movement(delta)
 	player_animations()
 	flip_player()
 	
 # --------- CUSTOM FUNCTIONS ---------- #
 
 # <-- Player Movement Code -->
-func movement():
+func movement(delta):
 	# Gravity
 	if !is_on_floor():
-		velocity.y += gravity
+		velocity.y += gravity * delta *60
 	elif is_on_floor():
 		jump_count = max_jump_count
 	
-	handle_jumping()
+	handle_jumping(delta)
 	
 	# Move Player
 	var inputAxis = Input.get_axis("Left", "Right")
-	velocity = Vector2(inputAxis * move_speed, velocity.y)
+	velocity = Vector2(inputAxis * move_speed * delta * 60, velocity.y)
 	move_and_slide()
 
 # Handles jumping functionality (double jump or single jump, can be toggled from inspector)
-func handle_jumping():
+func handle_jumping(delta):
 	if Input.is_action_just_pressed("Jump"):
 		if is_on_floor() and !double_jump:
 			jump()
 		elif double_jump and jump_count > 0:
 			jump()
-			jump_count -= 1
+			jump_count -= 1 
 
 # Player jump
 func jump():
